@@ -113,7 +113,7 @@ RUN chmod -R a+rX /opt/hermes && \
 RUN uv pip install --no-cache-dir --no-deps -e "."
 
 # ---------- Claude Code CLI ----------
-RUN curl -fsSL https://claude.ai/install.sh | sh -s -- --prefix /opt/claude && \
+RUN curl -fsSL https://claude.ai/install.sh | bash -s -- --prefix /opt/claude && \
     ln -s /opt/claude/bin/claude /usr/local/bin/claude
 
 # ---------- Runtime ----------
