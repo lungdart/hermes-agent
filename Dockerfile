@@ -112,6 +112,10 @@ RUN chmod -R a+rX /opt/hermes && \
 # this a fast (~1s) egg-link creation with no resolution or downloads.
 RUN uv pip install --no-cache-dir --no-deps -e "."
 
+# ---------- Claude Code CLI ----------
+RUN curl -fsSL https://claude.ai/install.sh | sh -s -- --prefix /opt/claude && \
+    ln -s /opt/claude/bin/claude /usr/local/bin/claude
+
 # ---------- Runtime ----------
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_HOME=/opt/data
