@@ -113,8 +113,17 @@ RUN chmod -R a+rX /opt/hermes && \
 RUN uv pip install --no-cache-dir --no-deps -e "."
 
 # ---------- Claude Code CLI ----------
-RUN curl -fsSL https://claude.ai/install.sh | bash -s -- --prefix /opt/claude && \
-    ln -s /opt/claude/bin/claude /usr/local/bin/claude
+# The official install script doesn't support --prefix; install directly.
+RUN set -e && \
+    VERSION=$(curl -fsSL https://downloads.claude.ai/claude-code-releases/latest) && \
+    PLATFORM="linux-x64" && \
+    MANIFEST=$(curl -fsSL "https://downloads.claude.ai/claude-code-releases/${VERSION}/manifest.json") && \
+    CHECKSUM=$(echo "$MANIFEST" | python3 -c "import sys,json; print(json.load(sys.stdin)['platforms']['${PLATFORM}']['checksum'])") && \
+    curl -fsSL -o /tmp/claude "https://downloads.claude.ai/claude-code-releases/${VERSION}/${PLATFORM}/claude" && \
+    ACTUAL=$(sha256sum /tmp/claude | cut -d' ' -f1) && \
+    [ "$ACTUAL" = "$CHECKSUM" ] && \
+    chmod +x /tmp/claude && \
+    mv /tmp/claude /usr/local/bin/claude
 
 # ---------- Runtime ----------
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
