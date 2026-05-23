@@ -15,7 +15,11 @@ ENV PLAYWRIGHT_BROWSERS_PATH=/opt/hermes/.playwright
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential curl nodejs npm python3 ripgrep ffmpeg gcc python3-dev libffi-dev procps git openssh-client docker-cli tini && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    curl -fsSL https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl && \
+    curl -fsSL https://github.com/cli/cli/releases/latest/download/gh_$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest | python3 -c "import sys,json;print(json.load(sys.stdin)['tag_name'].lstrip('v'))")_linux_amd64.tar.gz | \
+    tar xz --strip-components=1 -C /usr/local
 
 # Non-root user for runtime; UID 1000 matches common host UID to avoid
 # entrypoint chown on NFS volumes. Override via HERMES_UID at runtime.
